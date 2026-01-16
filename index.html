@@ -22,28 +22,47 @@
     <div id="zodiac-container"></div>
 
    <script>
-    // 1. 纯手工定义数据，确保没有任何特殊符号干扰
-    var data = ['♈白羊','♉金牛','♊双子','♋巨蟹','♌狮子','♍处女','♎天秤','♏天蝎','♐射手','♑摩羯','♒水瓶','♓双鱼'];
-    var box = document.getElementById('zodiac-container');
+    // 1. 完善数据，添加运势文案
+    const data = [
+        {n:'白羊', i:'♈', t:'今日运势：好运连连，适合开启新计划。'},
+        {n:'金牛', i:'♉', t:'今日运势：财运稳定，建议理智消费。'},
+        {n:'双子', i:'♊', t:'今日运势：灵感迸发，适合创意工作。'},
+        {n:'巨蟹', i:'♋', t:'今日运势：享受生活，适合与家人聚餐。'},
+        {n:'狮子', i:'♌', t:'今日运势：魅力四射，是人群中的焦点。'},
+        {n:'处女', i:'♍', t:'今日运势：事半功倍，建议整理环境。'},
+        {n:'天秤', i:'♎', t:'今日运势：贵人相助，难题迎刃而解。'},
+        {n:'天蝎', i:'♏', t:'今日运势：直觉敏锐，适合深层思考。'},
+        {n:'射手', i:'♐', t:'今日运势：活力充沛，适合户外运动。'},
+        {n:'摩羯', i:'♑', t:'今日运势：步步为营，坚持就是胜利。'},
+        {n:'水瓶', i:'♒', t:'今日运势：突破自我，尝试新鲜事物。'},
+        {n:'双鱼', i:'♓', t:'今日运势：浪漫温馨，适合深度交流。'}
+    ];
+
+    const box = document.getElementById('zodiac-container');
     
-    // 2. 只有当找到容器时才运行
     if (box) {
-        for (var i = 0; i < data.length; i++) {
-            var item = document.createElement('div');
-            item.className = 'zodiac-card';
-            item.innerText = data[i];
-            box.appendChild(item);
-        }
+        data.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'zodiac-card';
+            card.innerHTML = `<span class="icon">${item.i}</span><span class="name">${item.n}</span>`;
+            
+            // --- 新增：点击事件 ---
+            card.onclick = function() {
+                // 弹出对应星座的运势
+                alert(`【${item.n}座】\n${item.t}`);
+            };
+            
+            box.appendChild(card);
+        });
     }
 
-    // 3. 注册 SW (如果报错也不要影响方块显示)
-    try {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js');
-        }
-    } catch (e) { console.log(e); }
+    // 注册 Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js');
+    }
 </script>
 </body>
 </html>
+
 
 
