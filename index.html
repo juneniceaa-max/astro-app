@@ -3,93 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>星语占星 Pro - 深度测算</title>
+    <title>星语占星 Pro - 专业星盘测算</title>
     <style>
-        :root { --primary: #a29bfe; --bg: #0b0e21; --card: #1a1c3a; }
-        body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-   /* 1. 星星依然作为最底层的背景 */
-body::before {
-    content: "★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1; /* 放在最底层 */
-    
-    color: rgba(255, 255, 255, 0.8); /* 使用 rgba 控制星星自身亮度 */
-    font-size: 20px;
-    line-height: 1.5;
-    letter-spacing: 35px;
-    word-break: break-all;
-    
-    animation: stars 4s infinite ease-in-out;
-    pointer-events: none;
-}
+        :root { 
+            --primary: #a29bfe; 
+            --bg: #05071a; 
+            --card: rgba(26, 28, 58, 0.7); /* 半透明磨砂 */
+            --border: rgba(162, 155, 254, 0.3);
+        }
 
-/* 2. 关键：让你的 App 页面变透明 */
-/* 请根据你实际的 HTML 标签名修改（比如 #app, .main, .container） */
-.your-app-container { 
-    background-color: rgba(255, 255, 255, 0.2); /* 0.2 代表 20% 的透明度，星星会从这里透出来 */
-    backdrop-filter: blur(5px); /* 可选：增加毛玻璃效果，让星星看起来更梦幻 */
-    min-height: 100vh;
-}
-
-/* 3. 如果想让某些区域完全透出星星，某些区域不透 */
-.transparent-section {
-    background: transparent; /* 这个区域会看到完整的星空 */
-}
-
-.solid-section {
-    background: white; /* 这个区域会完全遮住星星 */
-}
-
-        /* 顶部配置面板 */
-        .config-box { background: var(--card); padding: 18px; border-radius: 20px; width: 100%; max-width: 400px; margin-bottom: 20px; border: 1px solid #3d3f5e; box-sizing: border-box; }
-        .input-row { display: flex; gap: 10px; margin-bottom: 12px; }
-        input, select { background: #2d2f4e; border: 1px solid #3d3f5e; color: white; padding: 10px; border-radius: 10px; flex: 1; outline: none; font-size: 14px; }
-
-        /* 功能选项卡 */
-        .tabs { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; max-width: 400px; overflow-x: auto; padding-bottom: 5px; }
-        .tab { padding: 10px 18px; background: var(--card); border-radius: 25px; font-size: 13px; white-space: nowrap; cursor: pointer; border: 1px solid #3d3f5e; color: #a2a2a2; }
-        .tab.active { background: var(--primary); color: #0b0e21; border-color: var(--primary); font-weight: bold; }
-
-        /* 星座卡片网格 */
-        #grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 400px; }
-        .card { 
-    background: var(--card); 
-    padding: 15px 5px; 
-    border-radius: 18px; 
-    text-align: center; 
-    border: 1px solid #3d3f5e; 
-    cursor: pointer; 
-    transition: 0.2s;
-    /* 核心修改：以下四行决定了上下排列和居中 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-        .card:active { transform: scale(0.92); background: #2d2f4e; }
-        .icon { font-size: 30px; display: block; margin-bottom: 8px; }
-        .name { font-size: 14px; font-weight: 500; }
-
-        /* 深度定制弹窗 - 解决 image_f7cae6 提到的网址显示问题 */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(10px); }
-        .modal-content { background: #1a1c3a; width: 88%; max-width: 360px; border-radius: 25px; border: 1px solid var(--primary); overflow: hidden; animation: pop 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* 1. 动态星空底层 */
+        @keyframes starsRotate {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100px); }
+        }
         
-        .modal-head { background: var(--primary); padding: 18px; text-align: center; font-weight: bold; color: #0b0e21; font-size: 18px; }
-        .modal-body { padding: 20px; color: #efefef; max-height: 60vh; overflow-y: auto; }
-        .item { margin-bottom: 15px; border-left: 3px solid var(--primary); padding-left: 12px; }
-        .label { color: var(--primary); font-size: 11px; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .val { font-size: 14px; line-height: 1.6; }
-        .close-btn { width: 100%; padding: 16px; background: transparent; border: none; color: var(--primary); border-top: 1px solid #3d3f5e; cursor: pointer; font-size: 16px; font-weight: bold; }
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: -apple-system, "SF Pro Display", sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            z-index: -1;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 22px;
+            line-height: 1.8;
+            letter-spacing: 40px;
+            word-break: break-all;
+            pointer-events: none;
+            animation: starsRotate 20s linear infinite;
+        }
+
+        h1 { color: var(--primary); margin: 10px 0 25px 0; font-weight: 300; letter-spacing: 2px; text-shadow: 0 0 10px rgba(162, 155, 254, 0.5); }
+
+        /* 2. 磨砂玻璃容器 */
+        .config-box, .card, .tab, .modal-content {
+            background: var(--card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+        }
+
+        .config-box { padding: 18px; width: 100%; max-width: 400px; margin-bottom: 20px; box-sizing: border-box; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 12px; }
+        input, select { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 12px; flex: 1; outline: none; font-size: 14px; }
+
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 400px; overflow-x: auto; scrollbar-width: none; }
+        .tab { padding: 10px 20px; font-size: 13px; white-space: nowrap; cursor: pointer; color: #a2a2a2; flex-shrink: 0; }
+        .tab.active { background: var(--primary); color: #0b0e21; border-color: var(--primary); font-weight: bold; box-shadow: 0 0 15px rgba(162, 155, 254, 0.4); }
+
+        #grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 400px; }
+        .card { padding: 20px 5px; text-align: center; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .card:active { transform: scale(0.95); }
+        .card img { width: 42px; height: 42px; filter: drop-shadow(0 0 5px var(--primary)); margin-bottom: 10px; }
+        .name { font-size: 14px; font-weight: 400; display: block; }
+
+        /* 3. 仪式感弹窗 */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(8px); }
+        .modal-content { width: 85%; max-width: 380px; overflow: hidden; animation: pop 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        @keyframes pop { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .modal-head { background: linear-gradient(135deg, var(--primary), #6c5ce7); padding: 20px; text-align: center; font-weight: bold; color: #0b0e21; font-size: 18px; }
+        .modal-body { padding: 25px; color: #e0e0e0; max-height: 60vh; overflow-y: auto; }
+        
+        .item { margin-bottom: 20px; position: relative; padding-left: 15px; }
+        .item::before { content: ""; position: absolute; left: 0; top: 2px; bottom: 2px; width: 3px; background: var(--primary); border-radius: 2px; }
+        .label { color: var(--primary); font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-bottom: 6px; display: block; }
+        .val { font-size: 14px; line-height: 1.7; }
+        
+        /* 加载动画 */
+        .loading-box { text-align: center; padding: 40px 0; }
+        .spinner { width: 40px; height: 40px; border: 3px solid rgba(162, 155, 254, 0.2); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .close-btn { width: 100%; padding: 18px; background: transparent; border: none; color: var(--primary); border-top: 1px solid var(--border); cursor: pointer; font-size: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1 style="color:var(--primary); margin: 10px 0 20px 0;">星语占星 Pro</h1>
+    <h1>星语占星 Pro</h1>
 
     <div class="config-box">
         <div class="input-row">
@@ -111,7 +119,7 @@ body::before {
         <div class="tab active" data-m="day">今日运势</div>
         <div class="tab" data-m="year">2026年全运</div>
         <div class="tab" data-m="mbti">MBTI 联动</div>
-        <div class="tab" data-m="tarot">塔罗灵感</div>
+        <div class="tab" data-m="tarot">每日一牌</div>
     </div>
 
     <div id="grid"></div>
@@ -120,93 +128,70 @@ body::before {
         <div class="modal-content">
             <div id="m-head" class="modal-head"></div>
             <div class="modal-body" id="m-body"></div>
-            <button class="close-btn" onclick="closeM()">关闭测算报告</button>
+            <button class="close-btn" onclick="closeM()">确认</button>
         </div>
     </div>
 
     <script>
         let mode = 'day';
         const zodiacs = [
-    {n:'白羊', i:'https://img.icons8.com/ios/100/7950f2/aries.png'},
-    {n:'金牛', i:'https://img.icons8.com/ios/100/7950f2/taurus.png'},
-    {n:'双子', i:'https://img.icons8.com/ios/100/7950f2/gemini.png'},
-    {n:'巨蟹', i:'https://img.icons8.com/ios/100/7950f2/cancer.png'},
-    {n:'狮子', i:'https://img.icons8.com/ios/100/7950f2/leo.png'},
-    {n:'处女', i:'https://img.icons8.com/ios/100/7950f2/virgo.png'},
-    {n:'天秤', i:'https://img.icons8.com/ios/100/7950f2/libra.png'},
-    {n:'天蝎', i:'https://img.icons8.com/ios/100/7950f2/scorpio.png'},
-    {n:'射手', i:'https://img.icons8.com/ios/100/7950f2/sagittarius.png'},
-    {n:'摩羯', i:'https://img.icons8.com/ios/100/7950f2/capricorn.png'},
-    {n:'水瓶', i:'https://img.icons8.com/ios/100/7950f2/aquarius.png'},
-    {n:'双鱼', i:'https://img.icons8.com/ios/100/7950f2/pisces.png'}
-];
+            {n:'白羊', i:'https://img.icons8.com/ios/100/a29bfe/aries.png'},
+            {n:'金牛', i:'https://img.icons8.com/ios/100/a29bfe/taurus.png'},
+            {n:'双子', i:'https://img.icons8.com/ios/100/a29bfe/gemini.png'},
+            {n:'巨蟹', i:'https://img.icons8.com/ios/100/a29bfe/cancer.png'},
+            {n:'狮子', i:'https://img.icons8.com/ios/100/a29bfe/leo.png'},
+            {n:'处女', i:'https://img.icons8.com/ios/100/a29bfe/virgo.png'},
+            {n:'天秤', i:'https://img.icons8.com/ios/100/a29bfe/libra.png'},
+            {n:'天蝎', i:'https://img.icons8.com/ios/100/a29bfe/scorpio.png'},
+            {n:'射手', i:'https://img.icons8.com/ios/100/a29bfe/sagittarius.png'},
+            {n:'摩羯', i:'https://img.icons8.com/ios/100/a29bfe/capricorn.png'},
+            {n:'水瓶', i:'https://img.icons8.com/ios/100/a29bfe/aquarius.png'},
+            {n:'双鱼', i:'https://img.icons8.com/ios/100/a29bfe/pisces.png'}
+        ];
 
-        // 核心加密哈希算法 (确保结果随生日/日期唯一)
         function getSeed(str) {
             let h = 0;
             for (let i = 0; i < str.length; i++) h = ((h << 5) - h) + str.charCodeAt(i) | 0;
             return Math.abs(h);
         }
 
-        // 大师话术逻辑
+        // 核心测算逻辑
         function generate(name) {
-            const birth = document.getElementById('birth').value;
-            const today = new Date().toISOString().slice(0, 10);
-            const rise = document.getElementById('rising').value || name;
-            const seed = getSeed(name + birth + today);
+            const birthValue = document.getElementById('birth').value;
+            const today = new Date().toDateString();
+            const seed = getSeed(name + birthValue + today + mode);
+            const rise = document.getElementById('rising').value || "本命";
             
             let html = '';
-            const headTitle = `${name}座 · ${mode === 'day' ? '今日报告' : '深度测算'}`;
+            const headTitle = `${name}座 · ${mode === 'day' ? '今日星图' : '深度报告'}`;
 
             if(mode === 'day') {
-            // 扩充后的专业话术库：太阳、月亮、上升三个维度
-            const sunLib = [
-                "今日事业宫位能量显著，适合开启筹备已久的计划，你的执行力将惊艳众人。",
-                "太阳相位显示今日宜保持低调，某个潜在的合作机会正在暗处酝酿，静待时机。",
-                "贵人运极佳，在不经意的社交场合可能会获得关键的职场情报或灵感。"
-            ];
-            const moonLib = [
-                "情绪波动期，建议通过阅读或冥想排遣压力，尽量不要在深夜做重大决定。",
-                "内心感知力增强，今日适合处理之前积压的感性矛盾，宜与亲友深度沟通。",
-                "由于月亮星象位移，今日你可能会对现状产生新的哲学思考，直觉非常敏锐。"
-            ];
-            const riseLib = [
-                "周围环境对你展现出前所未有的包容感，适合在今日提出你的合理请求。",
-                "注意细节管理，某个细小的流程失误可能会影响你全天的办事效率。",
-                "财帛宫有小幅震荡，注意守好钱包，今日应尽量避免任何形式的冲动消费。"
-            ];
-
-            // 使用 seed 确保不同生日的用户看到不同的组合结果
-            const sText = sunLib[seed % sunLib.length];
-            const mText = moonLib[seed % moonLib.length];
-            const rText = riseLib[seed % riseLib.length];
-
-            html += `<div class="item"><span class="label">太阳(外在能量)</span><div class="val">${sText}</div></div>`;
-            html += `<div class="item"><span class="label">月亮(内在情绪)</span><div class="val">${mText}</div></div>`;
-            html += `<div class="item"><span class="label">上升(${rise})</span><div class="val">${rText}</div></div>`;
-        }
-        // 确保这段代码紧跟在 mode === 'day' 的大括号后面
-        else if(mode === 'year') {
-            const m1 = (seed % 5) + 2; 
-            const m2 = (seed % 4) + 8;
-            html = `<div class="item"><span class="label">2026 整体基调</span><div class="val">这是属于你的<b>【觉醒之年】</b>，木星相位显示你将在事业上迎来跨越式进展。</div></div>
-                    <div class="item"><span class="label">重点月份提醒</span><div class="val"><b>${m1}月：</b>贵人运极佳，适合拓展。 <br><b>${m2}月：</b>注意财运波动，宜守不宜攻。</div></div>`;
-        } else if(mode === 'mbti') {
-            const mbtis = ["INTJ (建筑师)", "ENFP (竞选者)", "INFJ (提倡者)", "ENTP (辩论家)", "INFP (调解员)"];
-            html = `<div class="item"><span class="label">今日人格共振</span><div class="val">你的星盘能量场今日与 <b>${mbtis[seed % 5]}</b> 高度吻合，适合深度思考。</div></div>`;
-        } else if(mode === 'tarot') {
-             html = `<div class="item"><span class="label">塔罗指引</span><div class="val">今日抽中<b>【星辰】</b>牌面，象征希望与宁静，是适合断舍离的一天。</div></div>`;
-        }
+                const houses = ["命宫", "财帛宫", "兄弟宫", "田宅宫", "子女宫", "奴仆宫", "夫妻宫", "疾厄宫", "迁移宫", "官禄宫", "福德宫", "玄秘宫"];
+                const transit = ["三分相 (合谐)", "六分相 (机会)", "四分相 (磨砺)", "对分相 (张力)"];
+                
+                html += `
+                    <div class="item"><span class="label">当前相位</span><div class="val">天王星与${name}座太阳呈<b>${transit[seed % 4]}</b>。</div></div>
+                    <div class="item"><span class="label">重点宫位</span><div class="val">今日行运落在<b>${houses[seed % 12]}</b>，意味着你需要关注其对应的领域。</div></div>
+                    <div class="item"><span class="label">能量指南</span><div class="val">适合穿戴<b>${['琥珀金', '深海蓝', '玫瑰盐', '森林绿'][seed % 4]}</b>色系，增强磁场。</div></div>
+                `;
+            } else if(mode === 'year') {
+                html = `<div class="item"><span class="label">2026 核心词</span><div class="val"><b>【重塑与扩张】</b>。木星将在夏季进入利好相位。</div></div>
+                        <div class="item"><span class="label">关键转折</span><div class="val">在 ${(seed%3)+3} 月左右，你会遇到一个改变职场轨迹的贵人。</div></div>`;
+            } else if(mode === 'mbti') {
+                const mbtis = ["INTJ 建筑师", "ENFP 竞选者", "INFJ 提倡者", "ISTP 鉴赏家", "INFP 调解员"];
+                html = `<div class="item"><span class="label">人格镜像</span><div class="val">你的星盘能量今日与 <b>${mbtis[seed % 5]}</b> 产生强烈共振。</div></div>`;
+            } else if(mode === 'tarot') {
+                const cards = ["星辰 (希望)", "命运之轮 (转机)", "女祭司 (直觉)", "隐士 (思考)", "太阳 (成功)"];
+                html = `<div class="item"><span class="label">灵感指引</span><div class="val">今日抽中牌面：<b>【${cards[seed % 5]}】</b>。建议顺势而为。</div></div>`;
+            }
 
             document.getElementById('m-head').innerText = headTitle;
             document.getElementById('m-body').innerHTML = html;
-            document.getElementById('modal').style.display = 'flex';
         }
 
         function closeM() { document.getElementById('modal').style.display = 'none'; }
 
         window.onload = () => {
-            // 绑定 Tab 切换
             document.querySelectorAll('.tab').forEach(t => {
                 t.onclick = function() {
                     document.querySelector('.tab.active').classList.remove('active');
@@ -215,22 +200,22 @@ body::before {
                 }
             });
 
-            // 渲染星座
             const grid = document.getElementById('grid');
             zodiacs.forEach(z => {
                 const c = document.createElement('div');
                 c.className = 'card';
-              // 彻底修复：添加反引号，并增加图片加载失败的备用方案
-// 请直接替换 window.onload 内部的 c.innerHTML 这一行
-// 注意：图片增加了高度限制，文字增加了顶部边距
-// 这里的反引号 ` 非常关键，请完整覆盖第 174 行
-c.innerHTML = `
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <img src="${z.i}" style="width: 45px; height: 45px; margin-bottom: 8px;">
-        <span class="name">${z.n}座</span>
-    </div>
-`;
-                c.onclick = () => generate(z.n);
+                c.innerHTML = `<img src="${z.i}"><span class="name">${z.n}座</span>`;
+                c.onclick = () => {
+                    const m = document.getElementById('modal');
+                    document.getElementById('m-head').innerText = "星轨链接中...";
+                    document.getElementById('m-body').innerHTML = `
+                        <div class="loading-box">
+                            <div class="spinner"></div>
+                            <p style="font-size:12px; color:var(--primary)">正在调取 ${z.n}座 实时星象数据...</p>
+                        </div>`;
+                    m.style.display = 'flex';
+                    setTimeout(() => generate(z.n), 1200);
+                };
                 grid.appendChild(c);
             });
         };
