@@ -20,28 +20,28 @@
     <h1>星语占星</h1>
     <div id="zodiac-container"></div>
 
-    <script>
-        // 星座数据渲染
-        const zodiacs = [
-            {n:'白羊', i:'♈'}, {n:'金牛', i:'♉'}, {n:'双子', i:'♊'},
-            {n:'巨蟹', i:'♋'}, {n:'狮子', i:'♌'}, {n:'处女', i:'♍'},
-            {n:'天秤', i:'♎'}, {n:'天蝎', i:'♏'}, {n:'射手', i:'♐'},
-            {n:'摩羯', i:'♑'}, {n:'水瓶', i:'♒'}, {n:'双鱼', i:'♓'}
-        ];
-        const container = document.getElementById('zodiac-container');
-        zodiacs.forEach(z => {
-            const card = document.createElement('div');
-            card.className = 'zodiac-card';
-            card.innerHTML = `<span class="icon">${z.i}</span><span class="name">${z.n}</span>`;
-            container.appendChild(card);
-        });
-
-        // 注册 Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(() => console.log('服务就绪'))
-                .catch(err => console.log('失败', err));
+   <script>
+    // 1. 纯手工定义数据，确保没有任何特殊符号干扰
+    var data = ['♈白羊','♉金牛','♊双子','♋巨蟹','♌狮子','♍处女','♎天秤','♏天蝎','♐射手','♑摩羯','♒水瓶','♓双鱼'];
+    var box = document.getElementById('zodiac-container');
+    
+    // 2. 只有当找到容器时才运行
+    if (box) {
+        for (var i = 0; i < data.length; i++) {
+            var item = document.createElement('div');
+            item.className = 'zodiac-card';
+            item.innerText = data[i];
+            box.appendChild(item);
         }
-    </script>
+    }
+
+    // 3. 注册 SW (如果报错也不要影响方块显示)
+    try {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
+    } catch (e) { console.log(e); }
+</script>
 </body>
 </html>
+
