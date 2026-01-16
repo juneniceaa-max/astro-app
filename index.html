@@ -31,49 +31,44 @@
     <div id="zodiac-container"></div>
 
   <script>
-    // 1. 数据定义
-    const data = [
-        {n:'白羊', i:'♈', t:'今日运势：精力充沛，适合运动。'},
-        {n:'金牛', i:'♉', t:'今日运势：财运颇佳，建议储蓄。'},
-        {n:'双子', i:'♊', t:'今日运势：沟通顺畅，利于社交。'},
-        {n:'巨蟹', i:'♋', t:'今日运势：家庭温馨，适合陪伴。'},
-        {n:'狮子', i:'♌', t:'今日运势：自信爆棚，引领大家。'},
-        {n:'处女', i:'♍', t:'今日运势：工作细致，完美收工。'},
-        {n:'天秤', i:'♎', t:'今日运势：审美在线，适合打扮。'},
-        {n:'天蝎', i:'♏', t:'今日运势：目标明确，执行力强。'},
-        {n:'射手', i:'♐', t:'今日运势：心情舒畅，适合出游。'},
-        {n:'摩羯', i:'♑', t:'今日运势：事业有成，稳打稳扎。'},
-        {n:'水瓶', i:'♒', t:'今日运势：创意十足，想法新颖。'},
-        {n:'双鱼', i:'♓', t:'今日运势：浪漫多情，适合约会。'}
+    // 1. 使用全新的变量名 appData，彻底避开重复定义错误
+    var appData = [
+        {n:'白羊', i:'♈', t:'充满活力的一天！'}, {n:'金牛', i:'♉', t:'适合理财和享受美食。'},
+        {n:'双子', i:'♊', t:'沟通顺畅，会有好消息。'}, {n:'巨蟹', i:'♋', t:'多陪陪家人吧。'},
+        {n:'狮子', i:'♌', t:'你是今日的焦点！'}, {n:'处女', i:'♍', t:'适合处理琐碎细节。'},
+        {n:'天秤', i:'♎', t:'保持平衡，心情愉悦。'}, {n:'天蝎', i:'♏', t:'直觉非常准。'},
+        {n:'射手', i:'♐', t:'适合户外活动。'}, {n:'摩羯', i:'♑', t:'事业有新进展。'},
+        {n:'水瓶', i:'♒', t:'灵感源源不断。'}, {n:'双鱼', i:'♓', t:'浪漫的时刻即将到来。'}
     ];
 
-    const box = document.getElementById('zodiac-container');
-    console.log('容器状态:', box); // 调试日志：如果控制台能看到这个，说明脚本跑了
-
-    if (box) {
-        data.forEach(item => {
-            const card = document.createElement('div');
+    var mainBox = document.getElementById('zodiac-container');
+    
+    if (mainBox) {
+        // 先清空一次容器，防止重复生成
+        mainBox.innerHTML = ''; 
+        
+        appData.forEach(function(item) {
+            var card = document.createElement('div');
             card.className = 'zodiac-card';
-            card.innerHTML = `<span class="icon">${item.i}</span><span class="name">${item.n}</span>`;
+            card.innerHTML = '<span class="icon">' + item.i + '</span><span class="name">' + item.n + '</span>';
             
-            // --- 绑定点击事件 ---
+            // 关键：绑定点击弹窗
             card.onclick = function() {
-                console.log('点击了:', item.n); // 调试日志
                 alert('【' + item.n + '座】\n' + item.t);
             };
             
-            box.appendChild(card);
+            mainBox.appendChild(card);
         });
     }
 
-    // 2. 注册 SW (带上版本号强刷)
+    // 2. 注册 Service Worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js?v=4')
-            .then(() => console.log('SW V4 已就绪'));
+        navigator.serviceWorker.register('./sw.js?v=update' + Date.now());
     }
-</script>
+</script> 
 </body>
 </html>
+
 
 
 
