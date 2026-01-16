@@ -16,6 +16,16 @@
         .icon { font-size: 24px; margin-bottom: 8px; display: block; }
         .name { font-size: 14px; color: #dcdde1; }
     </style>
+    .zodiac-card {
+    cursor: pointer; /* 鼠标悬停显示手型 */
+    transition: transform 0.1s; /* 动画过渡 */
+    -webkit-tap-highlight-color: transparent; /* 消除手机点击蓝框 */
+}
+
+.zodiac-card:active {
+    transform: scale(0.92); /* 点击时缩小 8% */
+    background: #2d2f4e; /* 点击时颜色加深 */
+}
 </head>
 <body>
     <h1>星语占星</h1>
@@ -63,6 +73,7 @@
 </script>
 </body>
 </html>
+
 
 
 
