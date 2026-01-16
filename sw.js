@@ -1,4 +1,4 @@
-const CACHE_NAME = 'astro-v3'; // 注意：这里改成了 v2，可以强制刷新缓存
+const CACHE_NAME = 'astro-v4'; // 注意：这里改成了 v2，可以强制刷新缓存
 const assets = ['./', './index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', e => {
@@ -15,4 +15,5 @@ self.addEventListener('activate', e => {
         keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
     )));
 });
+
 
