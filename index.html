@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>星语占星</title>
@@ -31,48 +30,51 @@
     <h1>星语占星</h1>
     <div id="zodiac-container"></div>
 
-   <script>
-    // 1. 完善数据，添加运势文案
+  <script>
+    // 1. 数据定义
     const data = [
-        {n:'白羊', i:'♈', t:'今日运势：好运连连，适合开启新计划。'},
-        {n:'金牛', i:'♉', t:'今日运势：财运稳定，建议理智消费。'},
-        {n:'双子', i:'♊', t:'今日运势：灵感迸发，适合创意工作。'},
-        {n:'巨蟹', i:'♋', t:'今日运势：享受生活，适合与家人聚餐。'},
-        {n:'狮子', i:'♌', t:'今日运势：魅力四射，是人群中的焦点。'},
-        {n:'处女', i:'♍', t:'今日运势：事半功倍，建议整理环境。'},
-        {n:'天秤', i:'♎', t:'今日运势：贵人相助，难题迎刃而解。'},
-        {n:'天蝎', i:'♏', t:'今日运势：直觉敏锐，适合深层思考。'},
-        {n:'射手', i:'♐', t:'今日运势：活力充沛，适合户外运动。'},
-        {n:'摩羯', i:'♑', t:'今日运势：步步为营，坚持就是胜利。'},
-        {n:'水瓶', i:'♒', t:'今日运势：突破自我，尝试新鲜事物。'},
-        {n:'双鱼', i:'♓', t:'今日运势：浪漫温馨，适合深度交流。'}
+        {n:'白羊', i:'♈', t:'今日运势：精力充沛，适合运动。'},
+        {n:'金牛', i:'♉', t:'今日运势：财运颇佳，建议储蓄。'},
+        {n:'双子', i:'♊', t:'今日运势：沟通顺畅，利于社交。'},
+        {n:'巨蟹', i:'♋', t:'今日运势：家庭温馨，适合陪伴。'},
+        {n:'狮子', i:'♌', t:'今日运势：自信爆棚，引领大家。'},
+        {n:'处女', i:'♍', t:'今日运势：工作细致，完美收工。'},
+        {n:'天秤', i:'♎', t:'今日运势：审美在线，适合打扮。'},
+        {n:'天蝎', i:'♏', t:'今日运势：目标明确，执行力强。'},
+        {n:'射手', i:'♐', t:'今日运势：心情舒畅，适合出游。'},
+        {n:'摩羯', i:'♑', t:'今日运势：事业有成，稳打稳扎。'},
+        {n:'水瓶', i:'♒', t:'今日运势：创意十足，想法新颖。'},
+        {n:'双鱼', i:'♓', t:'今日运势：浪漫多情，适合约会。'}
     ];
 
     const box = document.getElementById('zodiac-container');
-    
+    console.log('容器状态:', box); // 调试日志：如果控制台能看到这个，说明脚本跑了
+
     if (box) {
         data.forEach(item => {
             const card = document.createElement('div');
             card.className = 'zodiac-card';
             card.innerHTML = `<span class="icon">${item.i}</span><span class="name">${item.n}</span>`;
             
-            // --- 新增：点击事件 ---
+            // --- 绑定点击事件 ---
             card.onclick = function() {
-                // 弹出对应星座的运势
-                alert(`【${item.n}座】\n${item.t}`);
+                console.log('点击了:', item.n); // 调试日志
+                alert('【' + item.n + '座】\n' + item.t);
             };
             
             box.appendChild(card);
         });
     }
 
-    // 注册 Service Worker
+    // 2. 注册 SW (带上版本号强刷)
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js');
+        navigator.serviceWorker.register('./sw.js?v=4')
+            .then(() => console.log('SW V4 已就绪'));
     }
 </script>
 </body>
 </html>
+
 
 
 
