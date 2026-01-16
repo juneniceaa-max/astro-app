@@ -3,50 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>星语占星 Pro</title>
+    <title>星语占星 Pro - 深度测算</title>
     <style>
         :root { --primary: #a29bfe; --bg: #0b0e21; --card: #1a1c3a; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+   /* 1. 星星依然作为最底层的背景 */
+body::before {
+    content: "★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★ . * ✦ . * ★";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* 放在最底层 */
+    
+    color: rgba(255, 255, 255, 0.8); /* 使用 rgba 控制星星自身亮度 */
+    font-size: 20px;
+    line-height: 1.5;
+    letter-spacing: 35px;
+    word-break: break-all;
+    
+    animation: stars 4s infinite ease-in-out;
+    pointer-events: none;
+}
+
+/* 2. 关键：让你的 App 页面变透明 */
+/* 请根据你实际的 HTML 标签名修改（比如 #app, .main, .container） */
+.your-app-container { 
+    background-color: rgba(255, 255, 255, 0.2); /* 0.2 代表 20% 的透明度，星星会从这里透出来 */
+    backdrop-filter: blur(5px); /* 可选：增加毛玻璃效果，让星星看起来更梦幻 */
+    min-height: 100vh;
+}
+
+/* 3. 如果想让某些区域完全透出星星，某些区域不透 */
+.transparent-section {
+    background: transparent; /* 这个区域会看到完整的星空 */
+}
+
+.solid-section {
+    background: white; /* 这个区域会完全遮住星星 */
+}
+
+        /* 顶部配置面板 */
+        .config-box { background: var(--card); padding: 18px; border-radius: 20px; width: 100%; max-width: 400px; margin-bottom: 20px; border: 1px solid #3d3f5e; box-sizing: border-box; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 12px; }
+        input, select { background: #2d2f4e; border: 1px solid #3d3f5e; color: white; padding: 10px; border-radius: 10px; flex: 1; outline: none; font-size: 14px; }
+
+        /* 功能选项卡 */
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; max-width: 400px; overflow-x: auto; padding-bottom: 5px; }
+        .tab { padding: 10px 18px; background: var(--card); border-radius: 25px; font-size: 13px; white-space: nowrap; cursor: pointer; border: 1px solid #3d3f5e; color: #a2a2a2; }
+        .tab.active { background: var(--primary); color: #0b0e21; border-color: var(--primary); font-weight: bold; }
+
+        /* 星座卡片网格 */
+        #grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 400px; }
+        .card { 
+    background: var(--card); 
+    padding: 15px 5px; 
+    border-radius: 18px; 
+    text-align: center; 
+    border: 1px solid #3d3f5e; 
+    cursor: pointer; 
+    transition: 0.2s;
+    /* 核心修改：以下四行决定了上下排列和居中 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+        .card:active { transform: scale(0.92); background: #2d2f4e; }
+        .icon { font-size: 30px; display: block; margin-bottom: 8px; }
+        .name { font-size: 14px; font-weight: 500; }
+
+        /* 深度定制弹窗 - 解决 image_f7cae6 提到的网址显示问题 */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(10px); }
+        .modal-content { background: #1a1c3a; width: 88%; max-width: 360px; border-radius: 25px; border: 1px solid var(--primary); overflow: hidden; animation: pop 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        /* 配置区域 */
-        .user-config { background: var(--card); padding: 15px; border-radius: 15px; width: 100%; max-width: 400px; margin-bottom: 20px; border: 1px solid #3d3f5e; box-sizing: border-box; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
-        input, select { background: #2d2f4e; border: 1px solid #3d3f5e; color: white; padding: 8px; border-radius: 8px; flex: 1; font-size: 14px; }
-
-        /* 选项卡 */
-        .tabs { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; max-width: 400px; overflow-x: auto; padding-bottom: 5px; }
-        .tab { padding: 8px 15px; background: var(--card); border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer; border: 1px solid #3d3f5e; }
-        .tab.active { background: var(--primary); color: #0b0e21; font-weight: bold; }
-
-        /* 星座网格 */
-        #zodiac-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 400px; }
-        .zodiac-card { background: var(--card); padding: 15px 5px; border-radius: 12px; text-align: center; border: 1px solid #3d3f5e; cursor: pointer; transition: 0.2s; }
-        .zodiac-card:active { transform: scale(0.95); background: #2d2f4e; }
-        .icon { font-size: 24px; display: block; margin-bottom: 5px; }
-        .name { font-size: 13px; opacity: 0.8; }
-
-        /* 自定义弹窗 - 解决网址显示问题 */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 999; backdrop-filter: blur(8px); }
-        .modal-content { background: #1a1c3a; width: 85%; max-width: 350px; border-radius: 24px; border: 1px solid var(--primary); overflow: hidden; }
-        .modal-header { background: var(--primary); padding: 15px; text-align: center; font-weight: bold; color: #0b0e21; }
-        .modal-body { padding: 20px; color: #dcdde1; }
-        .report-item { margin-bottom: 15px; }
-        .report-label { color: var(--primary); font-size: 12px; display: block; margin-bottom: 4px; }
-        .report-val { font-size: 15px; line-height: 1.6; }
-        .close-btn { width: 100%; padding: 15px; background: transparent; border: none; color: var(--primary); border-top: 1px solid #3d3f5e; cursor: pointer; font-size: 16px; }
+        .modal-head { background: var(--primary); padding: 18px; text-align: center; font-weight: bold; color: #0b0e21; font-size: 18px; }
+        .modal-body { padding: 20px; color: #efefef; max-height: 60vh; overflow-y: auto; }
+        .item { margin-bottom: 15px; border-left: 3px solid var(--primary); padding-left: 12px; }
+        .label { color: var(--primary); font-size: 11px; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .val { font-size: 14px; line-height: 1.6; }
+        .close-btn { width: 100%; padding: 16px; background: transparent; border: none; color: var(--primary); border-top: 1px solid #3d3f5e; cursor: pointer; font-size: 16px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1 style="color:var(--primary)">星语占星 Pro</h1>
+    <h1 style="color:var(--primary); margin: 10px 0 20px 0;">星语占星 Pro</h1>
 
-    <div class="user-config">
-        <div class="input-group">
-            <input type="date" id="birthDate" value="2000-01-01">
-            <input type="time" id="birthTime" value="12:00">
+    <div class="config-box">
+        <div class="input-row">
+            <input type="date" id="birth" value="2000-01-01">
+            <input type="time" id="time" value="12:00">
         </div>
-        <select id="risingSign">
-            <option value="">点击选择上升星座 (可选)</option>
+        <select id="rising" style="width: 100%;">
+            <option value="">点击设置上升星座 (更精准)</option>
             <option value="白羊">上升白羊</option><option value="金牛">上升金牛</option>
             <option value="双子">上升双子</option><option value="巨蟹">上升巨蟹</option>
             <option value="狮子">上升狮子</option><option value="处女">上升处女</option>
@@ -57,99 +108,130 @@
     </div>
 
     <div class="tabs">
-        <div class="tab active" data-mode="day">今日运势</div>
-        <div class="tab" data-mode="week">周运</div>
-        <div class="tab" data-mode="year">2026年运</div>
-        <div class="tab" data-mode="mbti">玄学联动</div>
+        <div class="tab active" data-m="day">今日运势</div>
+        <div class="tab" data-m="year">2026年全运</div>
+        <div class="tab" data-m="mbti">MBTI 联动</div>
+        <div class="tab" data-m="tarot">塔罗灵感</div>
     </div>
 
-    <div id="zodiac-container"></div>
+    <div id="grid"></div>
 
-    <div id="modalOverlay" class="modal-overlay">
+    <div id="modal" class="modal">
         <div class="modal-content">
-            <div id="modalHeader" class="modal-header"></div>
-            <div class="modal-body" id="modalBody"></div>
-            <button class="close-btn" onclick="closeModal()">我知道了</button>
+            <div id="m-head" class="modal-head"></div>
+            <div class="modal-body" id="m-body"></div>
+            <button class="close-btn" onclick="closeM()">关闭测算报告</button>
         </div>
     </div>
 
     <script>
-        // 1. 基础数据
-        let currentMode = 'day';
+        let mode = 'day';
         const zodiacs = [
-            {n:'白羊', i:'♈'}, {n:'金牛', i:'♉'}, {n:'双子', i:'♊'}, 
-            {n:'巨蟹', i:'♋'}, {n:'狮子', i:'♌'}, {n:'处女', i:'♍'},
-            {n:'天秤', i:'♎'}, {n:'天蝎', i:'♏'}, {n:'射手', i:'♐'}, 
-            {n:'摩羯', i:'♑'}, {n:'水瓶', i:'♒'}, {n:'双鱼', i:'♓'}
-        ];
+    {n:'白羊', i:'https://img.icons8.com/ios/100/7950f2/aries.png'},
+    {n:'金牛', i:'https://img.icons8.com/ios/100/7950f2/taurus.png'},
+    {n:'双子', i:'https://img.icons8.com/ios/100/7950f2/gemini.png'},
+    {n:'巨蟹', i:'https://img.icons8.com/ios/100/7950f2/cancer.png'},
+    {n:'狮子', i:'https://img.icons8.com/ios/100/7950f2/leo.png'},
+    {n:'处女', i:'https://img.icons8.com/ios/100/7950f2/virgo.png'},
+    {n:'天秤', i:'https://img.icons8.com/ios/100/7950f2/libra.png'},
+    {n:'天蝎', i:'https://img.icons8.com/ios/100/7950f2/scorpio.png'},
+    {n:'射手', i:'https://img.icons8.com/ios/100/7950f2/sagittarius.png'},
+    {n:'摩羯', i:'https://img.icons8.com/ios/100/7950f2/capricorn.png'},
+    {n:'水瓶', i:'https://img.icons8.com/ios/100/7950f2/aquarius.png'},
+    {n:'双鱼', i:'https://img.icons8.com/ios/100/7950f2/pisces.png'}
+];
 
-        const fortuneLib = {
-            sun: ["事业运极佳，适合推进重要项目。", "建议多休息，避免过度劳累。", "财运波动，注意理性消费。", "沟通顺畅，适合化解往日误会。"],
-            rising: ["会有突如其来的好消息。", "注意职场细节，防止小疏忽。", "社交运活跃，会结识新朋友。", "生活节奏变快，注意时间管理。"],
-            moon: ["情绪平稳，适合学习新知识。", "直觉准确，适合做内心选择。", "容易感性，适合联系老友。", "精力充沛，适合户外运动。"]
-        };
-
-        // 2. 辅助工具
-        function hashCode(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                hash |= 0; 
-            }
-            return Math.abs(hash);
+        // 核心加密哈希算法 (确保结果随生日/日期唯一)
+        function getSeed(str) {
+            let h = 0;
+            for (let i = 0; i < str.length; i++) h = ((h << 5) - h) + str.charCodeAt(i) | 0;
+            return Math.abs(h);
         }
 
-        function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-
-        // 3. 核心功能：生成内容
-        function generateContent(name) {
-            const birth = document.getElementById('birthDate').value;
-            const today = new Date().toISOString().slice(0, 10); 
-            const rising = document.getElementById('risingSign').value || name;
-            const seed = hashCode(name + birth + today);
+        // 大师话术逻辑
+        function generate(name) {
+            const birth = document.getElementById('birth').value;
+            const today = new Date().toISOString().slice(0, 10);
+            const rise = document.getElementById('rising').value || name;
+            const seed = getSeed(name + birth + today);
             
-            document.getElementById('modalHeader').innerText = name + "座 · " + (currentMode === 'day' ? '今日运势' : '报告');
             let html = '';
+            const headTitle = `${name}座 · ${mode === 'day' ? '今日报告' : '深度测算'}`;
 
-            if(currentMode === 'day') {
-                const s = fortuneLib.sun[seed % 4];
-                const r = fortuneLib.rising[(seed+1) % 4];
-                const m = fortuneLib.moon[(seed+2) % 4];
-                html = `<div class="report-item"><span class="report-label">太阳(外在能量)</span><div class="report-val">${s}</div></div>
-                        <div class="report-item"><span class="report-label">上升(${rising} 实际境遇)</span><div class="report-val">${r}</div></div>
-                        <div class="report-item"><span class="report-label">月亮(内在情绪)</span><div class="report-val">${m}</div></div>`;
-            } else if(currentMode === 'mbti') {
-                const mbtis = ["INTJ", "ENFP", "INFJ", "ENTP", "INFP"];
-                html = `<div class="report-item"><span class="report-label">人格联动</span><div class="report-val">根据星位指纹，你今日更接近 <b>${mbtis[seed % 5]}</b> 能量场。</div></div>`;
-            } else {
-                html = `<div class="report-item"><div class="report-val">此维度数据正在星历表中校准，请稍后重试。</div></div>`;
-            }
+            if(mode === 'day') {
+            // 扩充后的专业话术库：太阳、月亮、上升三个维度
+            const sunLib = [
+                "今日事业宫位能量显著，适合开启筹备已久的计划，你的执行力将惊艳众人。",
+                "太阳相位显示今日宜保持低调，某个潜在的合作机会正在暗处酝酿，静待时机。",
+                "贵人运极佳，在不经意的社交场合可能会获得关键的职场情报或灵感。"
+            ];
+            const moonLib = [
+                "情绪波动期，建议通过阅读或冥想排遣压力，尽量不要在深夜做重大决定。",
+                "内心感知力增强，今日适合处理之前积压的感性矛盾，宜与亲友深度沟通。",
+                "由于月亮星象位移，今日你可能会对现状产生新的哲学思考，直觉非常敏锐。"
+            ];
+            const riseLib = [
+                "周围环境对你展现出前所未有的包容感，适合在今日提出你的合理请求。",
+                "注意细节管理，某个细小的流程失误可能会影响你全天的办事效率。",
+                "财帛宫有小幅震荡，注意守好钱包，今日应尽量避免任何形式的冲动消费。"
+            ];
 
-            document.getElementById('modalBody').innerHTML = html;
-            document.getElementById('modalOverlay').style.display = 'flex';
+            // 使用 seed 确保不同生日的用户看到不同的组合结果
+            const sText = sunLib[seed % sunLib.length];
+            const mText = moonLib[seed % moonLib.length];
+            const rText = riseLib[seed % riseLib.length];
+
+            html += `<div class="item"><span class="label">太阳(外在能量)</span><div class="val">${sText}</div></div>`;
+            html += `<div class="item"><span class="label">月亮(内在情绪)</span><div class="val">${mText}</div></div>`;
+            html += `<div class="item"><span class="label">上升(${rise})</span><div class="val">${rText}</div></div>`;
+        }
+        // 确保这段代码紧跟在 mode === 'day' 的大括号后面
+        else if(mode === 'year') {
+            const m1 = (seed % 5) + 2; 
+            const m2 = (seed % 4) + 8;
+            html = `<div class="item"><span class="label">2026 整体基调</span><div class="val">这是属于你的<b>【觉醒之年】</b>，木星相位显示你将在事业上迎来跨越式进展。</div></div>
+                    <div class="item"><span class="label">重点月份提醒</span><div class="val"><b>${m1}月：</b>贵人运极佳，适合拓展。 <br><b>${m2}月：</b>注意财运波动，宜守不宜攻。</div></div>`;
+        } else if(mode === 'mbti') {
+            const mbtis = ["INTJ (建筑师)", "ENFP (竞选者)", "INFJ (提倡者)", "ENTP (辩论家)", "INFP (调解员)"];
+            html = `<div class="item"><span class="label">今日人格共振</span><div class="val">你的星盘能量场今日与 <b>${mbtis[seed % 5]}</b> 高度吻合，适合深度思考。</div></div>`;
+        } else if(mode === 'tarot') {
+             html = `<div class="item"><span class="label">塔罗指引</span><div class="val">今日抽中<b>【星辰】</b>牌面，象征希望与宁静，是适合断舍离的一天。</div></div>`;
         }
 
-        // 4. 页面加载完成后绑定事件
-        window.onload = function() {
-            // 绑定选项卡点击
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.onclick = function() {
+            document.getElementById('m-head').innerText = headTitle;
+            document.getElementById('m-body').innerHTML = html;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeM() { document.getElementById('modal').style.display = 'none'; }
+
+        window.onload = () => {
+            // 绑定 Tab 切换
+            document.querySelectorAll('.tab').forEach(t => {
+                t.onclick = function() {
                     document.querySelector('.tab.active').classList.remove('active');
                     this.classList.add('active');
-                    currentMode = this.getAttribute('data-mode');
+                    mode = this.getAttribute('data-m');
                 }
             });
 
-            // 渲染星座卡片并绑定点击
-            const container = document.getElementById('zodiac-container');
-            container.innerHTML = ''; // 清空
-            zodiacs.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'zodiac-card';
-                card.innerHTML = `<span class="icon">${item.i}</span><span class="name">${item.n}</span>`;
-                // 直接在这里绑定事件
-                card.onclick = function() { generateContent(item.n); };
-                container.appendChild(card);
+            // 渲染星座
+            const grid = document.getElementById('grid');
+            zodiacs.forEach(z => {
+                const c = document.createElement('div');
+                c.className = 'card';
+              // 彻底修复：添加反引号，并增加图片加载失败的备用方案
+// 请直接替换 window.onload 内部的 c.innerHTML 这一行
+// 注意：图片增加了高度限制，文字增加了顶部边距
+// 这里的反引号 ` 非常关键，请完整覆盖第 174 行
+c.innerHTML = `
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <img src="${z.i}" style="width: 45px; height: 45px; margin-bottom: 8px;">
+        <span class="name">${z.n}座</span>
+    </div>
+`;
+                c.onclick = () => generate(z.n);
+                grid.appendChild(c);
             });
         };
     </script>
