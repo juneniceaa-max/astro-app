@@ -1,23 +1,17 @@
-const CACHE_NAME = 'astro-v5';
+const CACHE_NAME = 'astro-v2'; // 注意：这里改成了 v2，可以强制刷新缓存
+const assets = ['./', './index.html', './manifest.json', './icon.png'];
 
-self.addEventListener('install', (event) => {
-    // 强制跳过等待，让新版本立即生效
-    self.skipWaiting();
-    console.log('SW installed');
+self.addEventListener('install', e => {
+    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(assets)));
 });
 
-self.addEventListener('activate', (event) => {
-    // 清理旧缓存，防止手机加载旧的白屏页面
-    event.waitUntil(
-        caches.keys().then(keys => Promise.all(
-            keys.map(key => caches.delete(key))
-        ))
-    );
+self.addEventListener('fetch', e => {
+    e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
 });
 
-self.addEventListener('fetch', (event) => {
-    // 手机端优先请求网络，失败了再找缓存，确保内容能出来
-    event.respondWith(
-        fetch(event.request).catch(() => caches.match(event.request))
-    );
+// 核心：当有新版本时立刻激活，删掉旧缓存
+self.addEventListener('activate', e => {
+    e.waitUntil(caches.keys().then(keys => Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+    )));
 });
