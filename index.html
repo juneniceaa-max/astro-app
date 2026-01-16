@@ -2,23 +2,27 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>星语占星</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon.png" type="image/png">
     
     <style>
+        /* 1. 核心背景与字体设置 */
         body { 
             background: #0b0e21; 
             color: white; 
-            font-family: sans-serif; 
+            font-family: -apple-system, sans-serif; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             padding: 20px; 
             margin: 0;
+            min-height: 100vh;
         }
-        h1 { color: #a29bfe; margin-bottom: 30px; }
+        h1 { color: #a29bfe; margin: 20px 0 30px 0; font-size: 28px; }
+
+        /* 2. 星座网格布局 */
         #zodiac-container { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
@@ -26,22 +30,29 @@
             width: 100%; 
             max-width: 400px; 
         }
+
+        /* 3. 星座方块样式 - 恢复紫色质感 */
         .zodiac-card { 
-            background: #1a1c3a; 
-            padding: 15px; 
-            border-radius: 12px; 
+            background: rgba(26, 28, 58, 0.9); 
+            padding: 20px 10px; 
+            border-radius: 16px; 
             text-align: center; 
             border: 1px solid #3d3f5e; 
             cursor: pointer;
-            transition: transform 0.1s, background 0.2s;
+            transition: all 0.2s ease;
             -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
+
+        /* 4. 点击交互效果 */
         .zodiac-card:active { 
-            transform: scale(0.92); 
+            transform: scale(0.9); 
             background: #2d2f4e; 
+            border-color: #a29bfe;
         }
-        .icon { font-size: 24px; margin-bottom: 8px; display: block; }
-        .name { font-size: 14px; color: #dcdde1; }
+
+        .icon { font-size: 28px; margin-bottom: 10px; display: block; }
+        .name { font-size: 15px; color: #dcdde1; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -50,14 +61,13 @@
     <div id="zodiac-container"></div>
 
     <script>
-        // 定义星座数据与运势文案
         var appData = [
             {n:'白羊', i:'♈', t:'充满活力的一天，适合开启新计划！'},
             {n:'金牛', i:'♉', t:'财运稳定，是个享受美食的好时机。'},
             {n:'双子', i:'♊', t:'沟通顺畅，会有意想不到的好消息。'},
             {n:'巨蟹', i:'♋', t:'心情温和，适合陪伴家人或好友。'},
             {n:'狮子', i:'♌', t:'自信满满，在人群中极具领导力。'},
-            {n:'处女', i:'♍', t:'事半功倍，适合整理繁琐的事务。'},
+            {n:'处女', i:'♍', t:'事半功便，适合整理繁琐的事务。'},
             {n:'天秤', i:'♎', t:'社交运佳，能够保持良好的平衡感。'},
             {n:'天蝎', i:'♏', t:'直觉敏锐，能够看穿事物的本质。'},
             {n:'射手', i:'♐', t:'活力充沛，适合进行户外或运动。'},
@@ -69,15 +79,13 @@
         var box = document.getElementById('zodiac-container');
         
         if (box) {
-            // 清空容器，防止旧代码干扰
             box.innerHTML = ''; 
-            
             appData.forEach(function(item) {
                 var card = document.createElement('div');
                 card.className = 'zodiac-card';
+                // 恢复图标与文字的组合展示
                 card.innerHTML = '<span class="icon">' + item.i + '</span><span class="name">' + item.n + '座</span>';
                 
-                // 绑定点击事件
                 card.onclick = function() {
                     alert('【' + item.n + '座】\n' + item.t);
                 };
@@ -86,10 +94,9 @@
             });
         }
 
-        // 注册 Service Worker (SW)
+        // 注册并强制更新 Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(function() { console.log('服务已更新'); });
+            navigator.serviceWorker.register('./sw.js?v=' + Date.now());
         }
     </script>
 </body>
